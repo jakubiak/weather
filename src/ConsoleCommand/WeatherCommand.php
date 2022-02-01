@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\ConsoleCommand;
 
+use App\Service\Exception\WeatherClientException;
+use App\Service\Weather\WeatherClientInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class WeatherCommand extends Command
+final class WeatherCommand extends Command
 {
     protected static $defaultName = 'app:weather';
 
     public function __construct(
-        private string $appid
+        private WeatherClientInterface $weatherClient
     )
     {
         parent::__construct();
@@ -29,23 +31,19 @@ class WeatherCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $city = urldecode($input->getArgument('city'));
-        $url = 'http://api.openweathermap.org/data/2.5/weather?q='.$city.'&appid='.$this->appid.'&units=metric';
-
         try {
-            $weatherResponse = file_get_contents($url);
-            $weather = json_decode($weatherResponse);
 
-            $output->writeln(
-                sprintf(
-                    "weather: %s , %d degrees celcius",
-                    $weather?->weather[0]?->description,
-                    (int)$weather?->main?->feels_like
-                )
-            );
+            $weather = $this->weatherClient
+                ->getWeatherByCity(
+                    $input->getArgument('city')
+                );
 
+            $output->writeln($weather);
+
+        } catch (WeatherClientException $exception) {
+            $output->writeln($exception->getMessage());
         } catch (\Throwable $exception) {
-            $output->writeln('Failed to fetch weather for: ' . $city);
+            $output->writeln("Unexpected error occurred: " . $exception->getMessage());
         }
 
         return Command::SUCCESS;

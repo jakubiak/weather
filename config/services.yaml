@@ -19,7 +19,8 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-    App\ConsoleCommand\WeatherCommand:
+
+    App\Service\Weather\WeatherClient:
         arguments:
             $appid: '%env(OPENWEATHERMAP_APPID)%'
 
