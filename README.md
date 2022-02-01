@@ -27,3 +27,10 @@ Main project classes:
 ----------------------------
 - App\ConsoleCommand\WeatherCommand
 - App\Service\Weather\WeatherClient
+
+For developers
+----------------------------------
+
+Run `php bin/phpunit` for tests execution
+
+Run `composer phpstan` for analyze code

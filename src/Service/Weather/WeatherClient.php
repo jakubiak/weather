@@ -10,7 +10,8 @@ final class WeatherClient implements WeatherClientInterface
 {
     public function __construct(
         private string $appid
-    ){
+    )
+    {
 
     }
 
@@ -20,6 +21,9 @@ final class WeatherClient implements WeatherClientInterface
 
         try {
             $weatherResponse = file_get_contents($url);
+            if (!$weatherResponse){
+                throw new WeatherClientException('Failed to fetch weather for: ' . $city);
+            }
             $weather = json_decode($weatherResponse);
 
             $output = sprintf(

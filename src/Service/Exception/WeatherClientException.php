@@ -6,5 +6,6 @@ namespace App\Service\Exception;
 
 final class WeatherClientException extends \RuntimeException
 {
+    /** @var string  */
     protected $message = 'Failed to fetch weather';
 }
